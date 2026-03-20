@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Mooiz | Home</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        /* ── Base font setup ── */
+        body {
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        h1 {
+            font-family: 'Syne', sans-serif;
+        }
+
+        /* ── Animated gradient background ── */
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .animated-bg {
+            background: linear-gradient(135deg, #0f0f0f, #1a0a2e, #0d1a1a, #0f0f0f);
+            background-size: 400% 400%;
+            animation: gradientShift 12s ease infinite;
+        }
+
+        /* ── Smooth card fade-in when songs render ── */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .song-card {
+            animation: fadeUp 0.4s ease forwards;
+            opacity: 0;
+        }
+
+        /* ── Stagger each card's animation delay ── */
+        .song-card:nth-child(1) {
+            animation-delay: 0.05s;
+        }
+
+        .song-card:nth-child(2) {
+            animation-delay: 0.10s;
+        }
+
+        .song-card:nth-child(3) {
+            animation-delay: 0.15s;
+        }
+
+        .song-card:nth-child(4) {
+            animation-delay: 0.20s;
+        }
+
+        .song-card:nth-child(5) {
+            animation-delay: 0.25s;
+        }
+
+        .song-card:nth-child(6) {
+            animation-delay: 0.30s;
+        }
+
+        .song-card:nth-child(7) {
+            animation-delay: 0.35s;
+        }
+
+        .song-card:nth-child(8) {
+            animation-delay: 0.40s;
+        }
+
+        /* ── Glowing search input ── */
+        #customMood:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px #eab308;
+        }
+
+        /* ── Mood chip hover pulse ── */
+        .mood-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .mood-btn:active {
+            transform: scale(0.97);
+        }
+
+        /* ── Dropdown menu transition ── */
+        .dropdown-menu {
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        /* ── Active nav item highlight ── */
+        .nav-active {
+            color: #eab308 !important;
+        }
+
+        /* ── Scrollbar styling ── */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body class="animated-bg text-white min-h-screen relative">
+
+    <!-- ══════════════════════════════
+         🌑 Dark overlay for readability
+    ══════════════════════════════ -->
+    <div class="fixed inset-0 -z-10 bg-black/60 pointer-events-none"></div>
+
+    <div class="max-w-2xl mx-auto px-4 pt-10 pb-32">
+
+        <!-- ══════════════════════════════
+             🎧 App Header
+        ══════════════════════════════ -->
+        <div class="text-center mb-10">
+            <h1 class="text-5xl font-extrabold tracking-tight mb-2">
+                <span class="text-yellow-400">Mooiz</span>
+            </h1>
+            <p class="text-gray-400 text-sm tracking-widest uppercase">Find music for any mood</p>
+        </div>
+
+        <!-- ══════════════════════════════
+             🔍 Search Bar
+             - Value is saved to sessionStorage so it persists when
+               the user navigates away and comes back to this page.
+        ══════════════════════════════ -->
+        <div class="flex gap-2 mb-8">
+            <input id="customMood" placeholder="anime vibes, late night, chill..."
+                class="flex-1 px-4 py-3 rounded-xl bg-white/10 border border-white/10 text-white placeholder-gray-500 transition"
+                autocomplete="off">
+            <button id="generateBtn" onclick="getCustomMood()"
+                class="bg-yellow-500 hover:bg-yellow-400 active:bg-yellow-600 px-5 py-3 rounded-xl font-semibold flex items-center gap-2 transition text-black">
+                <span id="btnText">Search</span>
+                <!-- 🔄 Spinner shown while fetching -->
+                <div id="spinner"
+                    class="hidden w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+            </button>
+        </div>
+
+        <!-- ══════════════════════════════
+             🎯 Quick Mood Buttons
+        ══════════════════════════════ -->
+        <div class="grid grid-cols-2 gap-3 mb-10">
+            <button onclick="getPlaylist('happy')"
+                class="mood-btn bg-green-500/20 border border-green-500/40 hover:bg-green-500/30 p-5 rounded-2xl text-base font-medium transition">
+                😊 Happy
+            </button>
+            <button onclick="getPlaylist('focus')"
+                class="mood-btn bg-blue-500/20 border border-blue-500/40 hover:bg-blue-500/30 p-5 rounded-2xl text-base font-medium transition">
+                🧠 Focus
+            </button>
+            <button onclick="getPlaylist('sad')"
+                class="mood-btn bg-purple-500/20 border border-purple-500/40 hover:bg-purple-500/30 p-5 rounded-2xl text-base font-medium transition">
+                😢 Sad
+            </button>
+            <button onclick="getPlaylist('workout')"
+                class="mood-btn bg-red-500/20 border border-red-500/40 hover:bg-red-500/30 p-5 rounded-2xl text-base font-medium transition">
+                💪 Workout
+            </button>
+        </div>
+
+        <!-- ══════════════════════════════
+             ⏳ Loading State
+        ══════════════════════════════ -->
+        <div id="loader" class="hidden flex flex-col items-center gap-3 py-12 text-gray-400">
+            <div class="w-8 h-8 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
+            <span class="text-sm">Finding your vibes...</span>
+        </div>
+
+        <!-- ══════════════════════════════
+             🎵 Playlist Results Container
+        ══════════════════════════════ -->
+        <div id="playlist" class="grid md:grid-cols-2 gap-5"></div>
+
+    </div>
+
+    <!-- ══════════════════════════════
+         🍞 Toast Notification
+    ══════════════════════════════ -->
+    <div id="toast"
+        class="fixed bottom-28 left-1/2 -translate-x-1/2 bg-zinc-800 border border-white/10 text-white text-sm px-5 py-2.5 rounded-full opacity-0 transition-opacity duration-300 pointer-events-none whitespace-nowrap z-50">
+    </div>
+
+    <!-- ══════════════════════════════
+         🧭 Bottom Navigation Bar
+         NOTE: The "Add" (+) button has been removed.
+         Nav items: Home | For You | Library | Me
+    ══════════════════════════════ -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-zinc-950/95 backdrop-blur border-t border-white/10 px-6 py-3 z-40">
+        <div class="max-w-md mx-auto flex justify-around items-center text-gray-400">
+
+            <!-- 🏠 Home (active) -->
+            <a href="/" class="nav-active flex flex-col items-center gap-1 text-xs">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                    <polyline points="9 22 9 12 15 12 15 22" />
+                </svg>
+                <span>Home</span>
+            </a>
+
+            <!-- 🎯 For You -->
+            <a href="/for-you" class="flex flex-col items-center gap-1 text-xs hover:text-white transition">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon
+                        points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                </svg>
+                <span>For You</span>
+            </a>
+
+            <!-- 📚 Library -->
+            <a href="/library" class="flex flex-col items-center gap-1 text-xs hover:text-white transition">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 18V5l12-2v13" />
+                    <circle cx="6" cy="18" r="3" />
+                    <circle cx="18" cy="16" r="3" />
+                </svg>
+                <span>Library</span>
+            </a>
+
+            <!-- 👤 Me -->
+            <a href="/me" class="flex flex-col items-center gap-1 text-xs hover:text-white transition">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                </svg>
+                <span>Me</span>
+            </a>
+
+        </div>
+    </nav>
+
+    <script>
+        // ══════════════════════════════════════════════
+        // 💾 SESSION PERSISTENCE
+        // Save the last search query and rendered songs
+        // to sessionStorage so navigating away and back
+        // doesn't wipe the results the user was looking at.
+        // ══════════════════════════════════════════════
+
+        const STORAGE_KEY_QUERY = "mooiz_last_query";
+        const STORAGE_KEY_SONGS = "mooiz_last_songs";
+
+        /** Restore previous search state on page load */
+        window.addEventListener("DOMContentLoaded", () => {
+            const savedQuery = sessionStorage.getItem(STORAGE_KEY_QUERY);
+            const savedSongs = sessionStorage.getItem(STORAGE_KEY_SONGS);
+
+            if (savedQuery) {
+                // Restore the text in the search box
+                document.getElementById("customMood").value = savedQuery;
+            }
+            if (savedSongs) {
+                // Re-render previously fetched songs without hitting the API again
+                renderSongs(JSON.parse(savedSongs));
+            }
+        });
+
+        // ══════════════════════════════════════════════
+        // 🎵 FETCH PLAYLIST BY MOOD BUTTON
+        // ══════════════════════════════════════════════
+        async function getPlaylist(mood) {
+            const loader = document.getElementById("loader");
+            const container = document.getElementById("playlist");
+
+            // Show loader, clear old results
+            loader.classList.remove("hidden");
+            container.innerHTML = "";
+
+            try {
+                const res = await fetch(`/playlist?mood=${encodeURIComponent(mood)}`);
+                const data = await res.json();
+
+                // Persist the mood label as query so it shows on return
+                sessionStorage.setItem(STORAGE_KEY_QUERY, mood);
+                sessionStorage.setItem(STORAGE_KEY_SONGS, JSON.stringify(data.playlist));
+
+                renderSongs(data.playlist);
+            } catch (err) {
+                showToast("⚠️ Could not load playlist.");
+                console.error("getPlaylist error:", err);
+            } finally {
+                loader.classList.add("hidden");
+            }
+        }
+
+        // ══════════════════════════════════════════════
+        // 🔍 CUSTOM MOOD SEARCH (input box)
+        // ══════════════════════════════════════════════
+        async function getCustomMood() {
+            const input = document.getElementById("customMood").value.trim();
+            if (!input) return;
+
+            const spinner = document.getElementById("spinner");
+            const btnText = document.getElementById("btnText");
+            const loader = document.getElementById("loader");
+            const container = document.getElementById("playlist");
+
+            // Show loading states
+            spinner.classList.remove("hidden");
+            btnText.textContent = "";
+            loader.classList.remove("hidden");
+            container.innerHTML = "";
+
+            try {
+                const res = await fetch(`/playlist?mood=${encodeURIComponent(input)}`);
+                const data = await res.json();
+
+                // ── Persist query + results to sessionStorage ──
+                sessionStorage.setItem(STORAGE_KEY_QUERY, input);
+                sessionStorage.setItem(STORAGE_KEY_SONGS, JSON.stringify(data.playlist));
+
+                renderSongs(data.playlist);
+            } catch (err) {
+                showToast("⚠️ Something went wrong.");
+                console.error("getCustomMood error:", err);
+            } finally {
+                spinner.classList.add("hidden");
+                btnText.textContent = "Search";
+                loader.classList.add("hidden");
+            }
+        }
+
+        // ══════════════════════════════════════════════
+        // 🎨 RENDER SONG CARDS
+        // ══════════════════════════════════════════════
+        function renderSongs(songs) {
+            const container = document.getElementById("playlist");
+            container.innerHTML = "";
+
+            if (!songs || songs.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-2 text-center py-12 text-gray-500">
+                        <p class="text-4xl mb-3">🎵</p>
+                        <p>No songs found. Try a different mood!</p>
+                    </div>`;
+                return;
+            }
+
+            songs.forEach(song => {
+                // Escape song data safely for use in onclick attributes
+                const safeData = JSON.stringify(song).replace(/'/g, "&#39;");
+
+                container.innerHTML += `
+                <div class="song-card bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-sm relative group hover:bg-white/10 hover:border-yellow-500/30 transition-all duration-200">
+
+                    <!-- ⋮ Three-dot menu trigger -->
+                    <button
+                        onclick="toggleMenu(this)"
+                        class="menu-toggle absolute top-3 right-3 text-gray-400 hover:text-white text-xl leading-none px-1 z-10"
+                        aria-label="Options"
+                    >⋮</button>
+
+                    <!-- 🎛️ Dropdown Menu -->
+                    <div class="menu dropdown-menu hidden absolute right-3 top-10 bg-zinc-900 border border-white/10 rounded-xl text-sm z-20 w-48 overflow-hidden opacity-0 scale-95 shadow-xl">
+                        <button
+                            onclick='savePlaylist(${safeData})'
+                            class="w-full text-left px-4 py-3 hover:bg-white/10 transition flex items-center gap-2">
+                            💾 <span>Save to playlist</span>
+                        </button>
+                        <div class="h-px bg-white/10"></div>
+                        <button
+                            onclick='likeSong(${safeData})'
+                            class="w-full text-left px-4 py-3 hover:bg-white/10 transition flex items-center gap-2">
+                            🤍 <span>Like this song</span>
+                        </button>
+                        <div class="h-px bg-white/10"></div>
+                        <button
+                            onclick='shareSong("${song.videoId}")'
+                            class="w-full text-left px-4 py-3 hover:bg-white/10 transition flex items-center gap-2">
+                            🔗 <span>Share</span>
+                        </button>
+                    </div>
+
+                    <!-- 🖼️ Thumbnail -->
+                    <img
+                        src="${song.thumbnail}"
+                        alt="${song.title}"
+                        class="w-full rounded-xl mb-3 object-cover aspect-video"
+                        loading="lazy"
+                    >
+
+                    <!-- 🎵 Song title & channel -->
+                    <h3 class="font-semibold text-sm mb-0.5 line-clamp-2 pr-6">${song.title}</h3>
+                    <p class="text-gray-500 text-xs mb-3">${song.channel || ""}</p>
+
+                    <!-- ▶️ Embedded Player -->
+                    <iframe
+                        class="w-full rounded-lg mb-3"
+                        height="180"
+                        src="https://www.youtube.com/embed/${song.videoId}"
+                        loading="lazy"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen
+                    ></iframe>
+
+                    <!-- ❤️ Quick Like Button -->
+                    <button
+                        onclick='likeSong(${safeData})'
+                        class="like-btn text-lg hover:scale-125 transition-transform"
+                        aria-label="Like song"
+                    >🤍</button>
+
+                </div>`;
+            });
+        }
+
+        // ══════════════════════════════════════════════
+        // 💾 SAVE SONG TO LIBRARY
+        // Checks login first; redirects to /login if not
+        // ══════════════════════════════════════════════
+        async function savePlaylist(songData) {
+            try {
+                // Verify session before saving
+                const check = await fetch("/me");
+                const user = await check.json();
+
+                if (!user.logged_in) {
+                    window.location.href = "/login";
+                    return;
+                }
+
+                const response = await fetch("/save-playlist", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ playlist: songData })
+                });
+
+                const result = await response.json();
+                showToast(result.status === "success" ? "✨ Saved to playlist!" : "❌ " + result.message);
+
+            } catch (err) {
+                console.error("savePlaylist error:", err);
+                showToast("⚠️ Something went wrong.");
+            }
+        }
+
+        // ══════════════════════════════════════════════
+        // ❤️ LIKE SONG
+        // ══════════════════════════════════════════════
+        async function likeSong(songData) {
+            try {
+                const res = await fetch("/like-song", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ song: songData })
+                });
+                const data = await res.json();
+
+                if (data.status === "success") {
+                    showToast("❤️ Added to liked songs!");
+                } else {
+                    showToast("🔒 Login required");
+                    window.location.href = "/login";
+                }
+            } catch (err) {
+                console.error("likeSong error:", err);
+            }
+        }
+
+        // ══════════════════════════════════════════════
+        // 🎛️ TOGGLE DROPDOWN MENU (with animation)
+        // ══════════════════════════════════════════════
+        function toggleMenu(button) {
+            const menu = button.nextElementSibling;
+
+            // Close every other open menu first
+            document.querySelectorAll(".menu").forEach(m => {
+                if (m !== menu) {
+                    m.classList.remove("opacity-100", "scale-100");
+                    setTimeout(() => m.classList.add("hidden"), 200);
+                }
+            });
+
+            if (menu.classList.contains("hidden")) {
+                menu.classList.remove("hidden");
+                // Small delay lets the browser register the element before animating
+                requestAnimationFrame(() => {
+                    menu.classList.add("opacity-100", "scale-100");
+                });
+            } else {
+                menu.classList.remove("opacity-100", "scale-100");
+                setTimeout(() => menu.classList.add("hidden"), 200);
+            }
+        }
+
+        // Close menus when clicking anywhere outside them
+        document.addEventListener("click", e => {
+            if (!e.target.closest(".menu") && !e.target.closest(".menu-toggle")) {
+                document.querySelectorAll(".menu").forEach(m => {
+                    m.classList.remove("opacity-100", "scale-100");
+                    setTimeout(() => m.classList.add("hidden"), 200);
+                });
+            }
+        });
+
+        // ══════════════════════════════════════════════
+        // ⌨️ ENTER KEY → trigger search
+        // ══════════════════════════════════════════════
+        document.getElementById("customMood").addEventListener("keypress", e => {
+            if (e.key === "Enter") getCustomMood();
+        });
+
+        // ══════════════════════════════════════════════
+        // 🍞 TOAST NOTIFICATION
+        // ══════════════════════════════════════════════
+        function showToast(message) {
+            const toast = document.getElementById("toast");
+            toast.textContent = message;
+            toast.classList.remove("opacity-0");
+            toast.classList.add("opacity-100");
+            setTimeout(() => {
+                toast.classList.remove("opacity-100");
+                toast.classList.add("opacity-0");
+            }, 2500);
+        }
+
+        // ══════════════════════════════════════════════
+        // 🔗 SHARE SONG (copy link to clipboard)
+        // ══════════════════════════════════════════════
+        function shareSong(videoId) {
+            const url = `https://www.youtube.com/watch?v=${videoId}`;
+            navigator.clipboard.writeText(url).then(() => showToast("🔗 Link copied!"));
+        }
+    </script>
+
+</body>
+
+</html>
